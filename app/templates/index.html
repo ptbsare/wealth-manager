@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Wealth Manager</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="manifest" href="/static/manifest.json">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">💰 Wealth Manager</h1>
+                <div class="header-actions">
+                    <div class="theme-toggle">
+                        <button class="theme-btn" data-theme="light" onclick="setTheme('light')">亮</button>
+                        <button class="theme-btn active" data-theme="auto" onclick="setTheme('auto')">自</button>
+                        <button class="theme-btn" data-theme="dark" onclick="setTheme('dark')">暗</button>
+                    </div>
+                    <span class="polling-status" id="polling-status">轮询中</span>
+                    <button class="btn-icon" id="btn-refresh" title="刷新数据">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="dashboard">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">总览</span>
+            </button>
+            <button class="nav-tab" data-tab="holdings">
+                <span class="nav-icon">📈</span>
+                <span class="nav-label">持仓</span>
+            </button>
+            <button class="nav-tab" data-tab="calendar">
+                <span class="nav-icon">📅</span>
+                <span class="nav-label">日历</span>
+            </button>
+            <button class="nav-tab" data-tab="settings">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">设置</span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <section class="tab-content active" id="tab-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card stat-total-cost">
+                        <div class="stat-label">总成本</div>
+                        <div class="stat-value" id="stat-total-cost">¥0.00</div>
+                    </div>
+                    <div class="stat-card stat-market-value">
+                        <div class="stat-label">总市值</div>
+                        <div class="stat-value" id="stat-market-value">¥0.00</div>
+                    </div>
+                    <div class="stat-card stat-profit">
+                        <div class="stat-label">总盈亏</div>
+                        <div class="stat-value" id="stat-profit">¥0.00</div>
+                        <div class="stat-sub" id="stat-profit-rate">0.00%</div>
+                    </div>
+                    <div class="stat-card stat-dividends">
+                        <div class="stat-label">已收分红</div>
+                        <div class="stat-value" id="stat-dividends-received">¥0.00</div>
+                    </div>
+                    <div class="stat-card stat-expected">
+                        <div class="stat-label">预期分红</div>
+                        <div class="stat-value" id="stat-dividends-expected">¥0.00</div>
+                    </div>
+                    <div class="stat-card stat-payback">
+                        <div class="stat-label">分红回本</div>
+                        <div class="stat-value" id="stat-payback">0.00%</div>
+                        <div class="stat-sub" id="stat-yield">股息率 0.00%</div>
+                    </div>
+                </div>
+
+                <!-- Quick Holdings -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2>持仓概览</h2>
+                        <button class="btn-text" onclick="switchTab('holdings')">查看全部 →</button>
+                    </div>
+                    <div class="holdings-list" id="dashboard-holdings-list">
+                        <div class="empty-state">暂无持仓数据</div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Dividends -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2>近期分红</h2>
+                        <button class="btn-text" onclick="switchTab('calendar')">查看日历 →</button>
+                    </div>
+                    <div class="dividends-list" id="dashboard-dividends-list">
+                        <div class="empty-state">暂无分红数据</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Holdings Tab -->
+            <section class="tab-content" id="tab-holdings">
+                <div class="section">
+                    <div class="section-header">
+                        <h2>持仓管理</h2>
+                        <button class="btn-primary" onclick="showAddHoldingModal()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"/>
+                            </svg>
+                            添加持仓
+                        </button>
+                    </div>
+                    <div class="holdings-list" id="holdings-list">
+                        <div class="empty-state">暂无持仓，点击上方按钮添加</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calendar Tab -->
+            <section class="tab-content" id="tab-calendar">
+                <div class="section">
+                    <div class="section-header">
+                        <h2>分红日历</h2>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 0.75rem; color: var(--text-hint);">🔵股权登记日 🟠除权除息日</span>
+                            <button class="btn-secondary btn-small" onclick="refreshCalendar()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                                </svg>
+                                刷新
+                            </button>
+                        </div>
+                    </div>
+                    <div class="calendar-container" id="calendar-container">
+                        <div class="empty-state">暂无分红日历数据</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Tab -->
+            <section class="tab-content" id="tab-settings">
+                <div class="section">
+                    <h2>SMTP 邮件通知</h2>
+                    <form class="settings-form" id="smtp-form">
+                        <div class="form-group">
+                            <label for="smtp-host">SMTP 服务器</label>
+                            <input type="text" id="smtp-host" placeholder="smtp.example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="smtp-port">端口</label>
+                            <input type="number" id="smtp-port" placeholder="587" value="587">
+                        </div>
+                        <div class="form-group">
+                            <label for="smtp-user">用户名</label>
+                            <input type="text" id="smtp-user" placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="smtp-password">密码</label>
+                            <input type="password" id="smtp-password" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label for="smtp-from">发件人</label>
+                            <input type="email" id="smtp-from" placeholder="from@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="smtp-to">收件人</label>
+                            <input type="email" id="smtp-to" placeholder="to@example.com">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="testEmail()">测试邮件</button>
+                            <button type="submit" class="btn-primary">保存设置</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h2>价格轮询配置</h2>
+                    <form class="settings-form" id="polling-form">
+                        <div class="form-group">
+                            <label for="polling-interval">轮询间隔 (秒)</label>
+                            <input type="number" id="polling-interval" placeholder="300" value="300" min="60" max="3600">
+                            <div class="form-hint">建议设置 60-3600 秒，避免过于频繁</div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">保存设置</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <h2>通知规则</h2>
+                        <button class="btn-primary btn-small" onclick="showAddRuleModal()">添加规则</button>
+                    </div>
+                    <div class="notification-rules" id="notification-rules-list">
+                        <div class="empty-state">暂无通知规则</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>MCP API 配置</h2>
+                    <div class="form-group">
+                        <label for="mcp-token">API Token</label>
+                        <input type="text" id="mcp-token" readonly>
+                        <button class="btn-secondary btn-small" onclick="copyToken()">复制</button>
+                    </div>
+                    <p class="form-hint">
+                        使用 Authorization Header 调用 /mcp 端点获取数据。<br>
+                        示例: <code>Authorization: Bearer YOUR_TOKEN</code>
+                    </p>
+                </div>
+
+                <div class="section">
+                    <h2>BaoStock 配置</h2>
+                    <form class="settings-form" id="baostock-form">
+                        <div class="form-group">
+                            <label for="bao-username">用户名 (可选)</label>
+                            <input type="text" id="bao-username" placeholder="anonymous">
+                        </div>
+                        <div class="form-group">
+                            <label for="bao-password">密码 (可选)</label>
+                            <input type="password" id="bao-password" placeholder="留空使用匿名登录">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">保存设置</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <!-- Add/Edit Holding Modal -->
+        <div class="modal" id="holding-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="holding-modal-title">添加持仓</h3>
+                    <button class="btn-close" onclick="closeModal('holding-modal')">×</button>
+                </div>
+                <form id="holding-form" onsubmit="return saveHolding(event)">
+                    <input type="hidden" id="holding-id">
+                    <div class="form-group">
+                        <label for="holding-symbol">股票代码 *</label>
+                        <div class="search-container">
+                            <input type="text" id="holding-symbol" class="stock-search-input" required placeholder="搜索股票代码或名称，例如: 茅台" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="holding-name">股票名称</label>
+                        <input type="text" id="holding-name" placeholder="可选，自动从BaoStock获取">
+                    </div>
+                    <div class="form-group">
+                        <label for="holding-quantity">持仓数量 *</label>
+                        <input type="number" id="holding-quantity" required min="1" step="any" placeholder="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="holding-cost">成本价 *</label>
+                        <input type="number" id="holding-cost" required min="0.01" step="0.01" placeholder="10.50">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('holding-modal')">取消</button>
+                        <button type="submit" class="btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add/Edit Dividend Modal -->
+        <div class="modal" id="dividend-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="dividend-modal-title">添加分红记录</h3>
+                    <button class="btn-close" onclick="closeModal('dividend-modal')">×</button>
+                </div>
+                <form id="dividend-form" onsubmit="return saveDividend(event)">
+                    <input type="hidden" id="dividend-id">
+                    <div class="form-group">
+                        <label for="dividend-symbol">股票代码 *</label>
+                        <div class="search-container">
+                            <input type="text" id="dividend-symbol" class="stock-search-input" required placeholder="搜索股票代码或名称" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dividend-date">分红日期 *</label>
+                        <input type="date" id="dividend-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dividend-per-share">每股分红 (元) *</label>
+                        <input type="number" id="dividend-per-share" required min="0" step="0.001" placeholder="0.500">
+                    </div>
+                    <div class="form-group">
+                        <label for="dividend-tax">税率 (%)</label>
+                        <input type="number" id="dividend-tax" min="0" max="100" step="0.1" placeholder="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="dividend-actual">实际到账金额</label>
+                        <input type="number" id="dividend-actual" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="dividend-status">状态</label>
+                        <select id="dividend-status">
+                            <option value="expected">预期</option>
+                            <option value="received">已到账</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dividend-notes">备注</label>
+                        <textarea id="dividend-notes" rows="2" placeholder="可选备注"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('dividend-modal')">取消</button>
+                        <button type="submit" class="btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add/Edit Notification Rule Modal -->
+        <div class="modal" id="rule-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="rule-modal-title">添加通知规则</h3>
+                    <button class="btn-close" onclick="closeModal('rule-modal')">×</button>
+                </div>
+                <form id="rule-form" onsubmit="return saveRule(event)">
+                    <input type="hidden" id="rule-id">
+                    <div class="form-group">
+                        <label for="rule-name">规则名称 *</label>
+                        <input type="text" id="rule-name" required placeholder="例如: 茅台跌幅提醒">
+                    </div>
+                    <div class="form-group">
+                        <label for="rule-type">规则类型 *</label>
+                        <select id="rule-type" required onchange="updateRuleForm()">
+                            <option value="price_drop_percent">股票单日跌幅超过X%</option>
+                            <option value="price_below">股票价格跌破X元</option>
+                            <option value="portfolio_drop_percent">持仓市值缩水超过X%</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="rule-symbol-group">
+                        <label for="rule-symbol">股票代码</label>
+                        <input type="text" id="rule-symbol" placeholder="例如: sh.600519">
+                        <div class="form-hint">格式: sh.600519 (上海) 或 sz.000858 (深圳)</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="rule-threshold">阈值 *</label>
+                        <input type="number" id="rule-threshold" required step="0.1" placeholder="10">
+                        <div class="form-hint" id="threshold-hint">例如: 10 表示跌幅超过10%</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="rule-subject">邮件主题</label>
+                        <input type="text" id="rule-subject" placeholder="股票价格提醒">
+                    </div>
+                    <div class="form-group">
+                        <label for="rule-template">邮件模板</label>
+                        <textarea id="rule-template" rows="4" placeholder="使用 {symbol}, {current_price}, {change_percent} 等变量"></textarea>
+                        <div class="form-hint">
+                            可用变量: {symbol}, {name}, {current_price}, {previous_price}, {change_percent}, {threshold}, {current_value}, {previous_value}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="rule-recipients">收件人 (多个用逗号分隔)</label>
+                        <input type="text" id="rule-recipients" placeholder="email1@example.com, email2@example.com">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('rule-modal')">取消</button>
+                        <button type="submit" class="btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

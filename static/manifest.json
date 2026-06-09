@@ -1,0 +1,22 @@
+{
+    "name": "Wealth Manager",
+    "short_name": "Wealth",
+    "description": "个人财富管理应用 - 股票持仓与分红管理",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f8f9fa",
+    "theme_color": "#1a73e8",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/static/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

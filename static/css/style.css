@@ -1,0 +1,1760 @@
+/* Wealth Manager - Main Stylesheet */
+
+:root {
+    --primary: #1a73e8;
+    --primary-dark: #1557b0;
+    --primary-light: #e8f0fe;
+    --success: #34a853;
+    --warning: #fbbc04;
+    --danger: #ea4335;
+    --text-primary: #202124;
+    --text-secondary: #5f6368;
+    --text-hint: #9aa0a6;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e8eaed;
+    --border: #dadce0;
+    --shadow: 0 1px 2px rgba(60,64,67,0.3), 0 1px 3px rgba(60,64,67,0.15);
+    --shadow-lg: 0 4px 6px rgba(60,64,67,0.3), 0 2px 4px rgba(60,64,67,0.2);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --nav-height: 60px;
+    --header-height: 56px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Dark mode */
+[data-theme="dark"] {
+    --primary: #8ab4f8;
+    --primary-dark: #669df6;
+    --primary-light: #1f3044;
+    --text-primary: #e8eaed;
+    --text-secondary: #9aa0a6;
+    --text-hint: #5f6368;
+    --bg-primary: #202124;
+    --bg-secondary: #303134;
+    --bg-tertiary: #3c4043;
+    --border: #5f6368;
+}
+
+/* Auto theme - follows system */
+@media (prefers-color-scheme: dark) {
+    [data-theme="auto"] {
+        --primary: #8ab4f8;
+        --primary-dark: #669df6;
+        --primary-light: #1f3044;
+        --text-primary: #e8eaed;
+        --text-secondary: #9aa0a6;
+        --text-hint: #5f6368;
+        --bg-primary: #202124;
+        --bg-secondary: #303134;
+        --bg-tertiary: #3c4043;
+        --border: #5f6368;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+}
+
+#app {
+    max-width: 768px;
+    margin: 0 auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    background: var(--primary);
+    color: white;
+    padding: 0 16px;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+}
+
+.header-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    display: flex;
+    background: rgba(255,255,255,0.2);
+    border-radius: 16px;
+    padding: 2px;
+}
+
+.theme-btn {
+    padding: 4px 8px;
+    border: none;
+    background: none;
+    color: white;
+    border-radius: 14px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.theme-btn.active {
+    background: rgba(255,255,255,0.3);
+}
+
+.polling-status {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+}
+
+.polling-status.active {
+    background: var(--success);
+}
+
+.btn-icon {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-icon:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+    display: flex;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: var(--header-height);
+    z-index: 99;
+}
+
+.nav-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 4px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.nav-tab.active {
+    color: var(--primary);
+}
+
+.nav-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20%;
+    right: 20%;
+    height: 3px;
+    background: var(--primary);
+    border-radius: 3px 3px 0 0;
+}
+
+.nav-icon {
+    font-size: 1.25rem;
+    margin-bottom: 2px;
+}
+
+.nav-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 16px;
+    padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 16px);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: var(--bg-primary);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-sub {
+    font-size: 0.75rem;
+    color: var(--text-hint);
+    margin-top: 2px;
+}
+
+.stat-profit .stat-value {
+    color: var(--danger);
+}
+
+.stat-profit .stat-value.positive {
+    color: var(--success);
+}
+
+.stat-dividends .stat-value {
+    color: var(--primary);
+}
+
+.stat-payback .stat-value {
+    color: var(--warning);
+}
+
+/* Section */
+.section {
+    background: var(--bg-primary);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.section-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.btn-text:hover {
+    text-decoration: underline;
+}
+
+/* Holdings List */
+.holdings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Sort Controls */
+.sort-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.sort-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    margin-right: 4px;
+}
+
+.sort-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sort-btn:hover {
+    background: var(--bg-tertiary);
+}
+
+.sort-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.holding-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.holding-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.holding-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.holding-symbol {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.holding-name {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.holding-meta {
+    font-size: 0.75rem;
+    color: var(--text-hint);
+    margin-top: 2px;
+}
+
+.holding-dividend {
+    font-size: 0.75rem;
+    color: var(--primary);
+    margin-top: 2px;
+}
+
+.holding-values {
+    text-align: right;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+.holding-market-value {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.holding-profit {
+    font-size: 0.8rem;
+    color: var(--danger);
+}
+
+.holding-profit.positive {
+    color: var(--success);
+}
+
+.holding-actions {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+/* Dividends List */
+.dividends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dividend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+}
+
+.dividend-info {
+    flex: 1;
+}
+
+.dividend-symbol {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.dividend-name {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.dividend-date {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.dividend-amount {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.dividend-status {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+}
+
+.dividend-status.expected {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.dividend-status.received {
+    background: #d4edda;
+    color: #155724;
+}
+
+/* Calendar */
+.calendar-container {
+    min-height: 200px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.calendar-nav-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s;
+    color: var(--text-primary);
+}
+
+.calendar-nav-btn:hover {
+    background: var(--bg-tertiary);
+}
+
+.calendar-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.calendar-view-toggle {
+    display: flex;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 2px;
+}
+
+.calendar-view-btn {
+    padding: 6px 12px;
+    border: none;
+    background: none;
+    border-radius: 18px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+.calendar-view-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+.calendar-month {
+    margin-bottom: 16px;
+}
+
+.calendar-month-header {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+}
+
+.calendar-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    border-left: 3px solid var(--primary);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.calendar-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.calendar-date {
+    width: 50px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.calendar-date .day {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-primary);
+}
+
+.calendar-date .month {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.calendar-info {
+    flex: 1;
+    margin-left: 12px;
+}
+
+.calendar-symbol {
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-primary);
+}
+
+.calendar-name {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.event-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.calendar-amount {
+    font-size: 0.8rem;
+    color: var(--primary);
+}
+
+.calendar-event-type {
+    font-size: 0.7rem;
+    margin-top: 2px;
+}
+
+/* Calendar Detail Panel */
+.calendar-detail-panel {
+    margin-top: 16px;
+    background: var(--bg-primary);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--primary);
+    color: white;
+}
+
+.detail-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.detail-header .btn-close {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.detail-header .btn-close:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.detail-body {
+    padding: 16px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.detail-value {
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-primary);
+}
+
+.detail-value.highlight {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Annual Overview */
+.annual-overview {
+    padding: 16px;
+}
+
+.annual-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.annual-year-select {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.annual-year-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background 0.2s;
+    color: var(--text-primary);
+}
+
+.annual-year-btn:hover {
+    background: var(--bg-tertiary);
+}
+
+.annual-year-display {
+    font-size: 1.5rem;
+    font-weight: 700;
+    min-width: 80px;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.annual-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.annual-summary-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    text-align: center;
+}
+
+.annual-summary-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.annual-summary-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.annual-summary-value.received {
+    color: var(--success);
+}
+
+.annual-summary-value.pending {
+    color: var(--warning);
+}
+
+.annual-summary-value.total {
+    color: var(--primary);
+}
+
+/* Monthly Chart */
+.monthly-chart {
+    margin-bottom: 24px;
+}
+
+.monthly-chart-title {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.monthly-chart-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 200px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+}
+
+.monthly-chart-bar {
+    flex: 1;
+    min-width: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    position: relative;
+    cursor: pointer;
+}
+
+.monthly-bar-stack {
+    width: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+}
+
+.monthly-bar-segment {
+    width: 80%;
+    min-height: 4px;
+    border-radius: 2px 2px 0 0;
+    transition: height 0.3s ease;
+}
+
+.monthly-bar-segment.received {
+    background: var(--success);
+}
+
+.monthly-bar-segment.pending {
+    background: var(--warning);
+}
+
+.monthly-bar-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.monthly-bar-value {
+    font-size: 0.65rem;
+    color: var(--text-hint);
+    position: absolute;
+    top: -20px;
+    white-space: nowrap;
+}
+
+/* Monthly Detail List */
+.monthly-detail {
+    margin-top: 16px;
+}
+
+.monthly-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.monthly-detail-title {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.monthly-detail-total {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.monthly-detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.monthly-detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+}
+
+.monthly-detail-info {
+    flex: 1;
+}
+
+.monthly-detail-symbol {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.monthly-detail-name {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.monthly-detail-date {
+    font-size: 0.75rem;
+    color: var(--text-hint);
+}
+
+.monthly-detail-amount {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.monthly-detail-amount.received {
+    color: var(--success);
+}
+
+.monthly-detail-amount.pending {
+    color: var(--warning);
+}
+
+/* Stock Detail */
+.stock-detail {
+    padding: 16px;
+}
+
+.stock-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.stock-detail-back {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    margin-bottom: 8px;
+}
+
+.stock-detail-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stock-detail-symbol {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.stock-detail-price {
+    text-align: right;
+}
+
+.stock-detail-current-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stock-detail-price-change {
+    font-size: 0.85rem;
+}
+
+.stock-detail-price-change.positive {
+    color: var(--success);
+}
+
+.stock-detail-price-change.negative {
+    color: var(--danger);
+}
+
+.stock-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stock-detail-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+}
+
+.stock-detail-card-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.stock-detail-card-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Notification Rules */
+.notification-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notification-rule-item {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+}
+
+.notification-rule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.notification-rule-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.notification-rule-status {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.notification-rule-status.active {
+    background: var(--success);
+    color: white;
+}
+
+.notification-rule-status.inactive {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.notification-rule-condition {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.notification-rule-template {
+    font-size: 0.8rem;
+    color: var(--text-hint);
+    background: var(--bg-tertiary);
+    padding: 8px;
+    border-radius: 4px;
+    font-family-family: monospace;
+}
+
+.notification-rule-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* Search Autocomplete */
+.search-container {
+    position: relative;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+}
+
+.search-results.active {
+    display: block;
+}
+
+.search-result-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background: var(--bg-secondary);
+}
+
+.search-result-symbol {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.search-result-name {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Settings Form */
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--text-hint);
+    margin-top: 4px;
+}
+
+.form-hint code {
+    background: var(--bg-tertiary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* Buttons */
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background: var(--border);
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-edit {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-primary);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    border-radius: var(--radius) var(--radius) 0 0;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg-primary);
+}
+
+.modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.btn-close:hover {
+    background: var(--bg-tertiary);
+}
+
+.modal form {
+    padding: 16px;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-hint);
+    font-size: 0.9rem;
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: calc(var(--nav-height) + var(--safe-bottom) + 16px);
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--text-primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-size: 0.9rem;
+    z-index: 300;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    max-width: 90%;
+    text-align: center;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast.success {
+    background: var(--success);
+}
+
+.toast.error {
+    background: var(--danger);
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .modal {
+        align-items: center;
+        padding: 20px;
+    }
+
+    .modal-content {
+        border-radius: var(--radius);
+        max-height: 80vh;
+    }
+}
+
+/* Holding Card Layout */
+.holding-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-bottom: 8px;
+}
+
+.holding-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.holding-card .holding-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.holding-card .holding-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.holding-card .holding-symbol {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.holding-card .holding-meta {
+    font-size: 0.75rem;
+    color: var(--text-hint);
+}
+
+.holding-card .holding-dividend {
+    font-size: 0.75rem;
+    color: var(--primary);
+    margin-top: 4px;
+}
+
+.holding-card .holding-values {
+    text-align: right;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+.holding-card .holding-market-value {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.holding-card .holding-profit {
+    font-size: 0.8rem;
+    color: var(--danger);
+}
+
+.holding-card .holding-profit.positive {
+    color: var(--success);
+}
+
+.holding-card .holding-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+
+.holding-card .btn-edit,
+.holding-card .btn-delete {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.holding-card .btn-edit {
+    background: var(--primary);
+    color: white;
+}
+
+.holding-card .btn-delete {
+    background: var(--danger);
+    color: white;
+}
+
+.holding-card .btn-edit:hover,
+.holding-card .btn-delete:hover {
+    opacity: 0.8;
+}
+
+/* Fix dark mode input visibility */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+    color: var(--text-primary) !important;
+    background: var(--bg-secondary) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    [data-theme="auto"] input,
+    [data-theme="auto"] select,
+    [data-theme="auto"] textarea {
+        color: var(--text-primary) !important;
+        background: var(--bg-secondary) !important;
+    }
+}
+
+/* Stock detail dividend section */
+.stock-detail-dividend {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stock-detail-dividend-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.stock-detail-dividend-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* Calendar Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.calendar-weekday {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 8px 0;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+    padding: 4px;
+}
+
+.calendar-day:hover {
+    background: var(--bg-secondary);
+}
+
+.calendar-day.empty {
+    cursor: default;
+}
+
+.calendar-day.empty:hover {
+    background: transparent;
+}
+
+.calendar-day.selected {
+    background: var(--primary);
+}
+
+.calendar-day.selected .calendar-day-number {
+    color: white;
+}
+
+.calendar-day.has-events {
+    background: var(--bg-secondary);
+}
+
+.calendar-day-number {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.calendar-dots {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+}
+
+.calendar-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+/* Calendar Details */
+.calendar-details {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-top: 16px;
+}
+
+.calendar-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.calendar-details-title {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.calendar-details-count {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.calendar-details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.calendar-detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-sm);
+}
+
+.calendar-detail-info {
+    flex: 1;
+}
+
+.calendar-detail-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.calendar-detail-symbol {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.calendar-detail-type {
+    font-size: 0.75rem;
+    margin-top: 2px;
+}
+
+.calendar-detail-values {
+    text-align: right;
+}
+
+.calendar-detail-amount {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.calendar-detail-total {
+    font-size: 0.8rem;
+    color: var(--primary);
+}
+
+/* Loading Animation */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Calendar Loading Dots */
+.loading-dots {
+    display: flex;
+    gap: 3px;
+    margin-top: 4px;
+}
+
+.loading-dots span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-hint);
+    animation: loading-pulse 1.4s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes loading-pulse {
+    0%, 80%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+    40% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.calendar-day.loading {
+    cursor: default;
+}
+
+.calendar-day.loading:hover {
+    background: transparent;
+}
