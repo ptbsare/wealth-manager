@@ -48,23 +48,42 @@ function setTheme(theme) {
     applyTheme(theme);
 }
 
-// API Helper
-async function api(endpoint, options = {}) {
+// API Helper with retry mechanism
+async function api(endpoint, options = {}, retries = 3) {
     const url = `${API_BASE}${endpoint}`;
     const config = {
         headers: { 'Content-Type': 'application/json', ...options.headers },
         ...options,
     };
-    try {
-        const response = await fetch(url, config);
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-            throw new Error(error.detail || `HTTP ${response.status}`);
+    
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+            
+            const response = await fetch(url, {
+                ...config,
+                signal: controller.signal,
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                throw new Error(error.detail || `HTTP ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.warn(`API attempt ${attempt}/${retries} failed:`, error.message);
+            
+            if (attempt === retries) {
+                console.error(`API Error after ${retries} attempts:`, error);
+                throw error;
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
         }
-        return await response.json();
-    } catch (error) {
-        console.error('API Error:', error);
-        throw error;
     }
 }
 
@@ -634,6 +653,8 @@ async function loadSettings() {
         document.getElementById('smtp-from').value = settings.smtp_from || '';
         document.getElementById('smtp-to').value = settings.smtp_to || '';
         document.getElementById('mcp-token').value = settings.mcp_token || '';
+        document.getElementById('received-years').value = settings.received_years || 3;
+        document.getElementById('expected-years').value = settings.expected_years || 1;
         
         updatePollingStatus(pollingStatus);
         renderNotificationRules(notificationRules);
@@ -1023,6 +1044,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const interval = parseInt(document.getElementById('polling-interval').value) || 300;
         api('/api/polling/config', { method: 'POST', body: JSON.stringify({ interval }) })
             .then(() => { showToast('轮询配置已保存', 'success'); loadSettings(); })
+            .catch(error => showToast('保存失败: ' + error.message, 'error'));
+    });
+
+    document.getElementById('dividend-stats-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const receivedYears = parseInt(document.getElementById('received-years').value) || 3;
+        const expectedYears = parseInt(document.getElementById('expected-years').value) || 1;
+        
+        api('/api/settings', { 
+            method: 'PUT', 
+            body: JSON.stringify({ 
+                received_years: receivedYears, 
+                expected_years: expectedYears 
+            }) 
+        })
+            .then(() => { 
+                showToast('分红统计设置已保存', 'success'); 
+                loadDashboard();
+            })
             .catch(error => showToast('保存失败: ' + error.message, 'error'));
     });
 

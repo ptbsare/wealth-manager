@@ -85,17 +85,6 @@
                     </div>
                 </div>
 
-                <!-- Quick Holdings -->
-                <div class="section">
-                    <div class="section-header">
-                        <h2>持仓概览</h2>
-                        <button class="btn-text" onclick="switchTab('holdings')">查看全部 →</button>
-                    </div>
-                    <div class="holdings-list" id="dashboard-holdings-list">
-                        <div class="empty-state">暂无持仓数据</div>
-                    </div>
-                </div>
-
                 <!-- Upcoming Dividends -->
                 <div class="section">
                     <div class="section-header">
@@ -131,15 +120,7 @@
                 <div class="section">
                     <div class="section-header">
                         <h2>分红日历</h2>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <span style="font-size: 0.75rem; color: var(--text-hint);">🔵股权登记日 🟠除权除息日</span>
-                            <button class="btn-secondary btn-small" onclick="refreshCalendar()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/>
-                                </svg>
-                                刷新
-                            </button>
-                        </div>
+                        <span style="font-size: 0.75rem; color: var(--text-hint);">🔵股权登记日 🟠除权除息日</span>
                     </div>
                     <div class="calendar-container" id="calendar-container">
                         <div class="empty-state">暂无分红日历数据</div>
@@ -205,6 +186,25 @@
                     <div class="notification-rules" id="notification-rules-list">
                         <div class="empty-state">暂无通知规则</div>
                     </div>
+                </div>
+
+                <div class="section">
+                    <h2>分红统计设置</h2>
+                    <form class="settings-form" id="dividend-stats-form">
+                        <div class="form-group">
+                            <label for="received-years">已收分红统计年数</label>
+                            <input type="number" id="received-years" min="1" max="10" value="3">
+                            <div class="form-hint">统计过去多少年的已收分红（默认3年）</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="expected-years">预计分红统计年数</label>
+                            <input type="number" id="expected-years" min="1" max="5" value="1">
+                            <div class="form-hint">统计未来多少年的预计分红（默认1年）</div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">保存设置</button>
+                        </div>
+                    </form>
                 </div>
 
                 <div class="section">
