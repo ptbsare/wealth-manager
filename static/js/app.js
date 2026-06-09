@@ -137,8 +137,7 @@ function hideLoading(containerId) {
 async function loadDashboard() {
     state.loading.dashboard = true;
     
-    // Show loading state
-    showLoading('dashboard-holdings-list', '加载数据中...');
+
     
     // Load all data in parallel
     const results = await Promise.allSettled([
@@ -173,7 +172,7 @@ async function loadDashboard() {
     document.getElementById('stat-yield').textContent = `股息率 ${displayStats.dividend_yield.toFixed(2)}%`;
 
     updatePollingStatus(pollingStatus);
-    renderDashboardHoldings(holdings.slice(0, 5));
+
     renderDashboardDividends(calendar.slice(0, 5));
     
     state.loading.dashboard = false;
@@ -187,28 +186,7 @@ function updatePollingStatus(status) {
     }
 }
 
-function renderDashboardHoldings(holdings) {
-    const container = document.getElementById('dashboard-holdings-list');
-    if (holdings.length === 0) {
-        container.innerHTML = '<div class="empty-state">暂无持仓数据</div>';
-        return;
-    }
-    container.innerHTML = holdings.map(h => `
-        <div class="holding-item" onclick="showStockDetail('${h.symbol}')">
-            <div class="holding-info">
-                <div class="holding-name">${escapeHtml(h.name)}</div>
-                <div class="holding-symbol">${escapeHtml(h.symbol)}</div>
-                <div class="holding-meta">${formatNumber(h.quantity)}股 · 成本 ${formatCurrency(h.cost_price)}</div>
-            </div>
-            <div class="holding-values">
-                <div class="holding-market-value">${formatCurrency(h.market_value)}</div>
-                <div class="holding-profit ${h.profit >= 0 ? 'positive' : ''}">
-                    ${h.profit >= 0 ? '+' : ''}${formatCurrency(h.profit)} (${h.profit_rate >= 0 ? '+' : ''}${h.profit_rate.toFixed(2)}%)
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
+
 
 function renderDashboardDividends(calendar) {
     const container = document.getElementById('dashboard-dividends-list');
@@ -409,8 +387,15 @@ function showStockDetail(symbol) {
     `;
 }
 
+// Calendar cache
+const calendarCache = {
+    data: null,
+    timestamp: 0,
+    expiry: 5 * 60 * 1000, // 5 minutes
+};
+
 // Calendar
-async function loadCalendar() {
+async function loadCalendar(forceRefresh = false) {
     state.loading.calendar = true;
     
     // Show calendar framework immediately with loading indicator
@@ -457,10 +442,23 @@ async function loadCalendar() {
     calendarHTML += '</div>';
     container.innerHTML = calendarHTML;
     
+    // Check cache first
+    const now = Date.now();
+    if (!forceRefresh && calendarCache.data && (now - calendarCache.timestamp) < calendarCache.expiry) {
+        state.calendar = calendarCache.data;
+        renderCalendar(calendarCache.data);
+        return;
+    }
+    
     // Load data in background
     try {
         const calendar = await api('/api/dividends/calendar');
         state.calendar = calendar;
+        
+        // Update cache
+        calendarCache.data = calendar;
+        calendarCache.timestamp = Date.now();
+        
         renderCalendar(calendar);
     } catch (error) {
         console.error('Calendar error:', error);
