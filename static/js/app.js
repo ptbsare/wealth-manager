@@ -501,37 +501,7 @@ function renderCalendar(calendar) {
                 <span class="calendar-title">${year}年 ${monthNames[month]}</span>
                 <button class="calendar-nav-btn" onclick="changeMonth(1)">›</button>
             </div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <span style="font-size: 0.7rem; color: var(--text-hint);">🔵登记日 🟠除权日 🟢派息日</span>
-            </div>
-        </div>
-        
-        <div class="calendar-grid">
-            ${weekDays.map(d => `<div class="calendar-weekday">${d}</div>`).join('')}
-    `;
-    
-    // Empty cells before first day
-    for (let i = 0; i < startDay; i++) {
-        calendarHTML += '<div class="calendar-day empty"></div>';
-    }
-    
-    // Days of month
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const events = eventsByDate[dateStr] || [];
-        const isSelected = state.selectedDate === dateStr;
-        
-        let dotsHTML = '';
-        if (events.length > 0) {
-            const uniqueTypes = [...new Set(events.map(e => e.type))];
-            dotsHTML = `<div class="calendar-dots">${uniqueTypes.map(type => {
-                let color;
-                if (type === 'record') color = '#2196F3';
-                else if (type === 'ex_dividend') color = '#FF9800';
-                else color = '#4CAF50';
-                return `<span class="calendar-dot" style="background-color: ${color};"></span>`;
-            }).join('')}</div>`;
-        }
+
         
         calendarHTML += `
             <div class="calendar-day ${isSelected ? 'selected' : ''} ${events.length > 0 ? 'has-events' : ''}" 
