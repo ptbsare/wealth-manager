@@ -190,32 +190,18 @@ class DividendService:
         total_cost = sum(h.cost_value for h in holdings)
         total_market_value = sum(h.market_value for h in holdings)
 
-        # Batch load all dividend data concurrently using threads
+        # Batch load all dividend data
         all_dividends = {}
         current_year = datetime.now().year
         
-        # Create list of all (symbol, year) pairs to fetch
-        fetch_tasks = []
         for holding in holdings:
             for year in range(current_year - received_years, current_year + expected_years + 1):
-                fetch_tasks.append((holding.symbol, year))
-        
-        # Use ThreadPoolExecutor for concurrent API calls
-        from concurrent.futures import ThreadPoolExecutor, as_completed
-        with ThreadPoolExecutor(max_workers=5) as executor:
-            future_to_key = {}
-            for symbol, year in fetch_tasks:
-                future = executor.submit(self.bao.get_dividend_data, symbol, year, True)
-                future_to_key[future] = (symbol, year)
-            
-            for future in as_completed(future_to_key):
-                symbol, year = future_to_key[future]
                 try:
-                    dividends = future.result(timeout=30)
+                    dividends = self.bao.get_dividend_data(holding.symbol, year, use_cache=True)
                     if dividends:
-                        all_dividends[(symbol, year)] = dividends
+                        all_dividends[(holding.symbol, year)] = dividends
                 except Exception as e:
-                    logger.debug(f"Failed to get dividends for {symbol} {year}: {e}")
+                    logger.debug(f"Failed to get dividends: {e}")
 
         # Calculate received dividends
         total_dividends_received = 0.0
