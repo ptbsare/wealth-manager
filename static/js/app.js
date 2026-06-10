@@ -135,10 +135,14 @@ function hideLoading(containerId) {
 
 // Dashboard
 async function loadDashboard() {
-    state.loading.dashboard = true;
-    
+    // Show loading state for stats
+    ['stat-total-cost', 'stat-market-value', 'stat-profit', 'stat-dividends-received', 'stat-dividends-expected', 'stat-payback'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '...';
+    });
 
-    
+    showLoading('dashboard-dividends-list', '加载数据中...');
+
     // Load all data in parallel
     const results = await Promise.allSettled([
         api('/api/holdings'),
