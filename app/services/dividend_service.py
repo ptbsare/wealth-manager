@@ -173,7 +173,6 @@ class DividendService:
 
     def get_portfolio_stats(self, received_years: int = 3, expected_years: int = 1) -> dict[str, Any]:
         """Get portfolio statistics with configurable time ranges and caching."""
-        
         # Check cache first
         cached = load_stats_cache()
         if cached and cached.get('received_years') == received_years and cached.get('expected_years') == expected_years:
@@ -182,7 +181,7 @@ class DividendService:
         
         holdings = self.get_holdings()
         
-        # Update prices in background - don't block
+        # Update prices - don't block on failure
         try:
             self.update_prices()
         except Exception as e:
@@ -191,18 +190,32 @@ class DividendService:
         total_cost = sum(h.cost_value for h in holdings)
         total_market_value = sum(h.market_value for h in holdings)
 
-        # Batch load all dividend data
+        # Batch load all dividend data concurrently using threads
         all_dividends = {}
         current_year = datetime.now().year
         
+        # Create list of all (symbol, year) pairs to fetch
+        fetch_tasks = []
         for holding in holdings:
             for year in range(current_year - received_years, current_year + expected_years + 1):
+                fetch_tasks.append((holding.symbol, year))
+        
+        # Use ThreadPoolExecutor for concurrent API calls
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            future_to_key = {}
+            for symbol, year in fetch_tasks:
+                future = executor.submit(self.bao.get_dividend_data, symbol, year, True)
+                future_to_key[future] = (symbol, year)
+            
+            for future in as_completed(future_to_key):
+                symbol, year = future_to_key[future]
                 try:
-                    dividends = self.bao.get_dividend_data(holding.symbol, year, use_cache=True)
+                    dividends = future.result(timeout=30)
                     if dividends:
-                        all_dividends[(holding.symbol, year)] = dividends
+                        all_dividends[(symbol, year)] = dividends
                 except Exception as e:
-                    logger.debug(f"Failed to get dividends: {e}")
+                    logger.debug(f"Failed to get dividends for {symbol} {year}: {e}")
 
         # Calculate received dividends
         total_dividends_received = 0.0
