@@ -39,4 +39,4 @@ htmlcov/
 # Web artifacts
 .pi/
 data/cache/
-data/cache/
+data/
